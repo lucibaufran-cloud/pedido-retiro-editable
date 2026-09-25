@@ -1,0 +1,1534 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pedido · Al Toque Roque</title>
+    <style>
+      :root {
+        --ink: #171717;
+        --muted: #515151;
+        --soft-muted: #777;
+        --line: #dedede;
+        --accent: #bd0b51;
+        --ready-bg: #d8f7df;
+        --ready-ink: #08711c;
+        --pink-line: #f2c6d9;
+        --page: #f5f5f5;
+        --white: #ffffff;
+        --button: #171717;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body {
+        background: #202020;
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .app {
+        position: relative;
+        width: min(100%, 720px);
+        min-height: 100vh;
+        margin: 0 auto;
+        overflow: hidden;
+        background: var(--page);
+      }
+
+      .map-strip {
+        position: relative;
+        height: 54px;
+        overflow: hidden;
+        color: #272727;
+        background:
+          linear-gradient(105deg, transparent 0 12%, rgba(255, 255, 255, .83) 12.3% 18%, transparent 18.3% 37%, rgba(255, 255, 255, .64) 37.3% 43%, transparent 43.3% 69%, rgba(255, 255, 255, .84) 69.3% 78%, transparent 78.3%),
+          linear-gradient(74deg, transparent 0 9%, rgba(207, 211, 210, .75) 9.4% 10.4%, transparent 10.8% 28%, rgba(207, 211, 210, .6) 28.4% 29.4%, transparent 29.8% 48%, rgba(207, 211, 210, .7) 48.4% 49.4%, transparent 49.8% 75%, rgba(207, 211, 210, .6) 75.4% 76.4%, transparent 76.8%),
+          #d6d7d6;
+      }
+
+      .map-strip::after {
+        position: absolute;
+        inset: -25px -8%;
+        content: "";
+        opacity: .48;
+        background:
+          repeating-linear-gradient(167deg, transparent 0 33px, #bfc2c1 34px 35px, transparent 36px 69px),
+          repeating-linear-gradient(78deg, transparent 0 46px, #c3c6c5 47px 48px, transparent 49px 103px);
+        transform: rotate(-7deg);
+      }
+
+      .status-bar {
+        position: absolute;
+        z-index: 2;
+        top: 7px;
+        left: 38px;
+        right: 27px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 17px;
+        letter-spacing: .1px;
+      }
+
+      .system-icons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .signal {
+        display: inline-flex;
+        align-items: end;
+        gap: 2px;
+        height: 15px;
+      }
+
+      .signal i {
+        display: block;
+        width: 3px;
+        border-radius: 2px 2px 0 0;
+        background: #333;
+      }
+
+      .signal i:nth-child(1) { height: 5px; }
+      .signal i:nth-child(2) { height: 8px; }
+      .signal i:nth-child(3) { height: 11px; }
+      .signal i:nth-child(4) { height: 14px; }
+
+      .battery {
+        position: relative;
+        width: 24px;
+        height: 12px;
+        border: 1.5px solid #333;
+        border-radius: 3px;
+      }
+
+      .battery::before {
+        position: absolute;
+        top: 2px;
+        right: -4px;
+        width: 2px;
+        height: 5px;
+        border-radius: 0 2px 2px 0;
+        background: #333;
+        content: "";
+      }
+
+      .battery::after {
+        position: absolute;
+        inset: 2px 4px 2px 2px;
+        border-radius: 1px;
+        background: #333;
+        content: "";
+      }
+
+      .sheet {
+        position: relative;
+        z-index: 1;
+        min-height: calc(100vh - 42px);
+        overflow: hidden;
+        border-radius: 28px 28px 0 0;
+        background: var(--white);
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, .16);
+      }
+
+      .grabber {
+        width: 72px;
+        height: 7px;
+        margin: 9px auto 0;
+        border-radius: 20px;
+        background: #818181;
+      }
+
+      .top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 47px;
+        padding: 0 20px;
+      }
+
+      .top-row-spacer {
+        width: 44px;
+      }
+
+      .menu-button {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        color: #3b3b3b;
+        background: transparent;
+        transition: background .18s ease, transform .18s ease;
+      }
+
+      .menu-button:hover,
+      .menu-button:focus-visible {
+        background: #f2f2f2;
+        outline: none;
+      }
+
+      .menu-button:active {
+        transform: scale(.94);
+      }
+
+      .hamburger {
+        display: grid;
+        gap: 5px;
+      }
+
+      .hamburger span {
+        display: block;
+        width: 23px;
+        height: 2.5px;
+        border-radius: 5px;
+        background: currentColor;
+      }
+
+      .order-heading {
+        padding: 1px 30px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .order-heading h1 {
+        margin: 0;
+        font-size: clamp(25px, 3.8vw, 32px);
+        line-height: 1.18;
+        font-weight: 700;
+      }
+
+      .order-count {
+        margin: 9px 0 0;
+        color: #414141;
+        font-size: clamp(19px, 3vw, 24px);
+        line-height: 1.2;
+      }
+
+      .address {
+        margin: 34px 0 0;
+        max-width: 620px;
+        font-size: clamp(20px, 3.15vw, 25px);
+        font-weight: 700;
+        line-height: 1.35;
+      }
+
+      .company {
+        padding: 28px 30px 27px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: clamp(19px, 3vw, 24px);
+      }
+
+      .order-content {
+        padding: 27px 30px 0;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 13px;
+        color: var(--ready-ink);
+        background: var(--ready-bg);
+        font-size: clamp(19px, 3vw, 24px);
+        font-weight: 700;
+      }
+
+      .code-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: min(100%, 420px);
+        min-height: 95px;
+        margin-top: 15px;
+        padding: 0 23px;
+        border: 3px solid var(--pink-line);
+        border-radius: 14px;
+        background: #fff;
+      }
+
+      .order-code {
+        font-size: clamp(32px, 5.2vw, 44px);
+        letter-spacing: .3px;
+        font-weight: 700;
+      }
+
+      .expand-icon {
+        position: relative;
+        width: 30px;
+        height: 30px;
+        color: var(--accent);
+      }
+
+      .expand-icon::before,
+      .expand-icon::after {
+        position: absolute;
+        width: 11px;
+        height: 11px;
+        content: "";
+      }
+
+      .expand-icon::before {
+        top: 1px;
+        right: 0;
+        border-top: 3px solid currentColor;
+        border-right: 3px solid currentColor;
+      }
+
+      .expand-icon::after {
+        bottom: 1px;
+        left: 0;
+        border-bottom: 3px solid currentColor;
+        border-left: 3px solid currentColor;
+      }
+
+      .expand-icon span,
+      .expand-icon span::after {
+        position: absolute;
+        width: 20px;
+        height: 3px;
+        border-radius: 4px;
+        background: currentColor;
+        content: "";
+      }
+
+      .expand-icon span {
+        top: 13px;
+        right: 1px;
+        transform: rotate(-45deg);
+      }
+
+      .expand-icon span::after {
+        top: 0;
+        left: 0;
+        transform: rotate(90deg);
+      }
+
+      .customer-line {
+        margin: 20px 0 0;
+        font-size: clamp(20px, 3.3vw, 26px);
+        line-height: 1.25;
+        font-weight: 700;
+      }
+
+      .products-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 17px;
+        min-height: 93px;
+        color: var(--accent);
+        font-size: clamp(22px, 3.5vw, 28px);
+        font-weight: 700;
+      }
+
+      .chevron {
+        width: 22px;
+        height: 22px;
+        border-right: 4px solid currentColor;
+        border-bottom: 4px solid currentColor;
+        transform: rotate(45deg) translateY(-4px);
+      }
+
+      .payment {
+        margin: 0 -30px;
+        padding: 24px 30px 30px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .payment-label {
+        margin: 0;
+        color: var(--soft-muted);
+        font-size: 18px;
+      }
+
+      .payment-value {
+        margin: 23px 0 0;
+        font-size: clamp(20px, 3.3vw, 25px);
+      }
+
+      .experience {
+        margin: 42px 0 0;
+        padding: 30px 18px 23px;
+        border: 2px solid #cbcbcb;
+        border-radius: 20px;
+        text-align: center;
+      }
+
+      .experience-question {
+        margin: 0;
+        font-size: clamp(19px, 3vw, 25px);
+      }
+
+      .faces {
+        display: flex;
+        justify-content: center;
+        gap: 72px;
+        margin-top: 30px;
+      }
+
+      .face {
+        display: grid;
+        width: 74px;
+        height: 74px;
+        place-items: center;
+        border: 2px solid #d9d9d9;
+        border-radius: 50%;
+        color: #8a8a8a;
+        background: #eeeeee;
+      }
+
+      .face svg {
+        width: 49px;
+        height: 49px;
+      }
+
+      .bottom-area {
+        margin-top: 91px;
+        padding: 30px 30px 29px;
+        border-top: 1px solid var(--line);
+      }
+
+      .confirm-button {
+        width: 100%;
+        min-height: 81px;
+        border: 0;
+        border-radius: 50px;
+        color: #fff;
+        background: var(--button);
+        font-size: clamp(21px, 3.6vw, 28px);
+        font-weight: 700;
+        transition: transform .16s ease, background .16s ease;
+      }
+
+      .confirm-button:hover {
+        background: #2b2b2b;
+      }
+
+      .confirm-button:active {
+        transform: scale(.985);
+      }
+
+      .confirm-button:focus-visible,
+      .editor input:focus-visible,
+      .editor textarea:focus-visible {
+        outline: 3px solid #f3a7c4;
+        outline-offset: 2px;
+      }
+
+      .editor-overlay {
+        position: fixed;
+        z-index: 10;
+        inset: 0;
+        display: flex;
+        justify-content: flex-end;
+        visibility: hidden;
+        background: rgba(0, 0, 0, .36);
+        opacity: 0;
+        transition: opacity .2s ease, visibility .2s ease;
+      }
+
+      .editor-overlay.open {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .editor {
+        width: min(100%, 410px);
+        height: 100%;
+        overflow-y: auto;
+        padding: 26px 24px 34px;
+        background: #fff;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, .16);
+        transform: translateX(100%);
+        transition: transform .24s ease;
+      }
+
+      .editor-overlay.open .editor {
+        transform: translateX(0);
+      }
+
+      .editor-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .editor-header h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .editor-header p {
+        margin: 6px 0 0;
+        color: #6c6c6c;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .close-editor {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        color: #555;
+        background: #f2f2f2;
+        font-size: 25px;
+        line-height: 1;
+      }
+
+      .editor-group {
+        margin: 0 0 17px;
+      }
+
+      .editor-group label {
+        display: block;
+        margin-bottom: 7px;
+        color: #3f3f3f;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .editor input,
+      .editor textarea {
+        display: block;
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #d2d2d2;
+        border-radius: 10px;
+        color: #171717;
+        background: #fff;
+        font-size: 16px;
+      }
+
+      .editor textarea {
+        min-height: 74px;
+        resize: vertical;
+      }
+
+      .editor-divider {
+        height: 1px;
+        margin: 25px 0 22px;
+        background: #e8e8e8;
+      }
+
+      .editor-section-title {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .editor-section-copy {
+        margin: 5px 0 19px;
+        color: #777;
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .editor-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .editor-actions button {
+        min-height: 46px;
+        padding: 0 16px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .reset-button {
+        border: 1px solid #cfcfcf;
+        color: #333;
+        background: #fff;
+      }
+
+      .done-button {
+        flex: 1;
+        border: 0;
+        color: #fff;
+        background: var(--accent);
+      }
+
+      .toast {
+        position: fixed;
+        z-index: 20;
+        bottom: 24px;
+        left: 50%;
+        padding: 12px 17px;
+        border-radius: 12px;
+        color: #fff;
+        background: #252525;
+        font-size: 14px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, 10px);
+        transition: opacity .2s ease, transform .2s ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .delivery-view {
+        display: none;
+        min-height: 100vh;
+        background: #fff;
+      }
+
+      .app.delivery-mode .map-strip,
+      .app.delivery-mode > .sheet {
+        display: none;
+      }
+
+      .app.delivery-mode .delivery-view {
+        display: block;
+      }
+
+      .delivery-map {
+        position: relative;
+        height: min(486px, 67.5vw);
+        overflow: hidden;
+        background: #e8e1db url("attached_assets/WhatsApp_Image_2026-09-24_at_17.22.50_1790307709649.jpeg") center top / 100% auto no-repeat;
+      }
+
+      .delivery-map::after {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 37%, rgba(80, 53, 31, .04));
+        content: "";
+        pointer-events: none;
+      }
+
+      .delivery-menu-button {
+        position: absolute;
+        z-index: 2;
+        top: 17%;
+        left: 35px;
+        width: 70px;
+        height: 70px;
+        color: #222;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .delivery-menu-button:hover,
+      .delivery-menu-button:focus-visible {
+        background: rgba(255, 255, 255, .18);
+      }
+
+      .delivery-menu-button .hamburger {
+        visibility: hidden;
+      }
+
+      .delivery-status {
+        position: absolute;
+        z-index: 2;
+        top: 17%;
+        left: 50%;
+        min-width: 260px;
+        padding: 8px 24px 12px;
+        border-radius: 25px;
+        text-align: center;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
+        transform: translateX(-50%);
+      }
+
+      .delivery-status small {
+        display: block;
+        color: #777;
+        font-size: 18px;
+      }
+
+      .delivery-status strong {
+        display: block;
+        margin-top: 2px;
+        font-size: 27px;
+      }
+
+      .delivery-status::after {
+        position: absolute;
+        top: 7px;
+        right: 15px;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: #0c9b19;
+        content: "";
+      }
+
+      .delivery-card {
+        position: relative;
+        z-index: 1;
+        min-height: calc(100vh - min(486px, 67.5vw));
+        margin-top: -1px;
+        overflow: hidden;
+        border-radius: 30px 30px 0 0;
+        background: #fff;
+        box-shadow: 0 -3px 12px rgba(0, 0, 0, .13);
+      }
+
+      .delivery-grabber {
+        width: 72px;
+        height: 7px;
+        margin: 10px auto 0;
+        border-radius: 20px;
+        background: #777;
+      }
+
+      .delivery-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 17px 30px 23px;
+      }
+
+      .delivery-customer {
+        margin: 0;
+        font-size: clamp(25px, 3.8vw, 32px);
+        line-height: 1.15;
+      }
+
+      .delivery-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .delivery-action {
+        display: grid;
+        width: 56px;
+        height: 56px;
+        place-items: center;
+        border: 3px solid var(--pink-line);
+        border-radius: 50%;
+        color: #c92a6c;
+        background: #fff;
+      }
+
+      .delivery-action svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .delivery-info {
+        padding: 0 30px 24px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .delivery-address,
+      .delivery-apartment {
+        margin: 0;
+        font-size: clamp(20px, 3.2vw, 26px);
+        line-height: 1.45;
+      }
+
+      .delivery-apartment {
+        margin-top: 6px;
+        color: #555;
+      }
+
+      .delivery-order-info {
+        padding: 34px 30px 0;
+      }
+
+      .delivery-code {
+        margin: 0;
+        font-size: clamp(34px, 5.5vw, 46px);
+        line-height: 1.1;
+        letter-spacing: .2px;
+      }
+
+      .delivery-reference,
+      .delivery-business {
+        margin: 16px 0 0;
+        font-size: clamp(19px, 3.2vw, 25px);
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      .delivery-business {
+        margin-top: 12px;
+      }
+
+      .delivery-products-head {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 17px;
+        min-height: 94px;
+        color: var(--accent);
+        font-size: clamp(22px, 3.5vw, 28px);
+        font-weight: 700;
+      }
+
+      .delivery-products-head .chevron {
+        transform: rotate(225deg) translateY(-4px);
+      }
+
+      .product-list {
+        margin: 0 -30px;
+        border-top: 1px solid var(--line);
+      }
+
+      .product-item {
+        display: grid;
+        grid-template-columns: 38px 1fr auto;
+        align-items: center;
+        gap: 15px;
+        min-height: 70px;
+        padding: 0 30px;
+        font-size: clamp(18px, 3vw, 24px);
+      }
+
+      .product-item + .product-item {
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .product-item-quantity {
+        color: #555;
+      }
+
+      .product-item-name {
+        font-weight: 700;
+      }
+
+      .product-item-price {
+        white-space: nowrap;
+      }
+
+      .delivery-back {
+        display: block;
+        width: calc(100% - 60px);
+        min-height: 58px;
+        margin: 24px 30px 30px;
+        border: 0;
+        border-radius: 30px;
+        color: #fff;
+        background: #171717;
+        font-size: 19px;
+        font-weight: 700;
+      }
+
+      .delivery-return {
+        display: block;
+        width: calc(100% - 60px);
+        min-height: 52px;
+        margin: -18px 30px 30px;
+        border: 1px solid #d2d2d2;
+        border-radius: 28px;
+        color: #333;
+        background: #fff;
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      @media (max-width: 520px) {
+        .map-strip {
+          height: 47px;
+        }
+
+        .status-bar {
+          top: 6px;
+          left: 23px;
+          right: 20px;
+          font-size: 14px;
+        }
+
+        .system-icons {
+          gap: 5px;
+          font-size: 11px;
+        }
+
+        .sheet {
+          min-height: calc(100vh - 40px);
+          border-radius: 25px 25px 0 0;
+        }
+
+        .grabber {
+          width: 48px;
+          height: 5px;
+          margin-top: 8px;
+        }
+
+        .top-row {
+          min-height: 39px;
+          padding: 0 13px;
+        }
+
+        .top-row-spacer,
+        .menu-button {
+          width: 38px;
+        }
+
+        .menu-button {
+          height: 38px;
+        }
+
+        .hamburger {
+          gap: 4px;
+        }
+
+        .hamburger span {
+          width: 19px;
+          height: 2px;
+        }
+
+        .order-heading {
+          padding: 0 20px 16px;
+        }
+
+        .address {
+          margin-top: 22px;
+        }
+
+        .company {
+          padding: 20px;
+        }
+
+        .order-content {
+          padding: 20px 20px 0;
+        }
+
+        .status {
+          min-height: 38px;
+          padding: 0 12px;
+          border-radius: 10px;
+        }
+
+        .code-box {
+          min-height: 75px;
+          margin-top: 10px;
+          padding: 0 15px;
+          border-width: 2px;
+          border-radius: 11px;
+        }
+
+        .customer-line {
+          margin-top: 13px;
+        }
+
+        .products-row {
+          min-height: 67px;
+          gap: 13px;
+        }
+
+        .payment {
+          margin: 0 -20px;
+          padding: 17px 20px 20px;
+        }
+
+        .payment-value {
+          margin-top: 14px;
+        }
+
+        .experience {
+          margin-top: 29px;
+          padding: 21px 12px 16px;
+          border-radius: 15px;
+        }
+
+        .faces {
+          gap: 53px;
+          margin-top: 20px;
+        }
+
+        .face {
+          width: 61px;
+          height: 61px;
+        }
+
+        .face svg {
+          width: 41px;
+          height: 41px;
+        }
+
+        .bottom-area {
+          margin-top: 59px;
+          padding: 20px;
+        }
+
+        .confirm-button {
+          min-height: 67px;
+        }
+
+        .delivery-map {
+          height: min(486px, 67.5vw);
+        }
+
+        .delivery-menu-button {
+          top: 17%;
+          left: 20px;
+          width: 40px;
+          height: 40px;
+        }
+
+        .delivery-status {
+          top: 17%;
+          min-width: 155px;
+          padding: 5px 14px 7px;
+        }
+
+        .delivery-status small {
+          font-size: 12px;
+        }
+
+        .delivery-status strong {
+          font-size: 18px;
+        }
+
+        .delivery-status::after {
+          top: 6px;
+          right: 8px;
+          width: 11px;
+          height: 11px;
+        }
+
+        .delivery-card {
+          border-radius: 25px 25px 0 0;
+        }
+
+        .delivery-grabber {
+          width: 48px;
+          height: 5px;
+          margin-top: 8px;
+        }
+
+        .delivery-card-header {
+          gap: 8px;
+          padding: 13px 20px 17px;
+        }
+
+        .delivery-actions {
+          gap: 7px;
+        }
+
+        .delivery-action {
+          width: 49px;
+          height: 49px;
+          border-width: 2px;
+        }
+
+        .delivery-action svg {
+          width: 24px;
+          height: 24px;
+        }
+
+        .delivery-info {
+          padding: 0 20px 18px;
+        }
+
+        .delivery-order-info {
+          padding: 26px 20px 0;
+        }
+
+        .delivery-reference,
+        .delivery-business {
+          margin-top: 11px;
+        }
+
+        .delivery-business {
+          margin-top: 9px;
+        }
+
+        .delivery-products-head {
+          min-height: 67px;
+          gap: 13px;
+        }
+
+        .product-list {
+          margin: 0 -20px;
+        }
+
+        .product-item {
+          grid-template-columns: 28px 1fr auto;
+          gap: 9px;
+          min-height: 57px;
+          padding: 0 20px;
+          font-size: 17px;
+        }
+
+        .delivery-back {
+          width: calc(100% - 40px);
+          margin: 20px 20px 24px;
+          min-height: 52px;
+          font-size: 17px;
+        }
+
+        .delivery-return {
+          width: calc(100% - 40px);
+          margin: -12px 20px 24px;
+          min-height: 48px;
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app" aria-label="Detalle del pedido">
+      <div class="map-strip" aria-hidden="true">
+        <div class="status-bar">
+          <span>22:58 ✈︎</span>
+          <span class="system-icons">
+            <span>◔</span>
+            <span>⌁</span>
+            <span class="signal"><i></i><i></i><i></i><i></i></span>
+            <span>4G</span>
+            <span>▮ 80%</span>
+          </span>
+        </div>
+      </div>
+
+      <section class="sheet">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="top-row">
+          <span class="top-row-spacer" aria-hidden="true"></span>
+          <button class="menu-button" id="open-editor" type="button" aria-label="Editar datos del pedido" aria-controls="editor-overlay" aria-expanded="false">
+            <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+          </button>
+        </div>
+
+        <header class="order-heading">
+          <h1 data-bind="restaurant">Al Toque Roque Hamburguesas</h1>
+          <p class="order-count"><span data-bind="orders">1</span> <span data-bind="ordersLabel">pedido</span></p>
+          <p class="address" data-bind="address">Avenida Doctor Honorio Pueyrredón 4222 - ,<br />B1631, Pilar</p>
+        </header>
+
+        <div class="company">
+          Empresa: <span data-bind="company">Al Toque Roque Hamburguesas</span>
+        </div>
+
+        <section class="order-content">
+          <span class="status" data-bind="status">Listo</span>
+          <div class="code-box">
+            <span class="order-code" data-bind="code">2296369589</span>
+            <span class="expand-icon" aria-hidden="true"><span></span></span>
+          </div>
+          <p class="customer-line">
+            <span data-bind="code">2296369589</span> -
+            <span data-bind="reference">#3524</span> -
+            <span data-bind="customer">agustina beltran</span>
+          </p>
+
+          <div class="products-row">
+            <span><span data-bind="products">2</span> <span data-bind="productsLabel">productos</span></span>
+            <span class="chevron" aria-hidden="true"></span>
+          </div>
+
+          <div class="payment">
+            <p class="payment-label" data-bind="paymentLabel">Pago</p>
+            <p class="payment-value" data-bind="payment">No pagar en el local</p>
+          </div>
+
+          <div class="experience">
+            <p class="experience-question" data-bind="experienceQuestion">¿Cómo es la experiencia de retiro?</p>
+            <div class="faces" aria-hidden="true">
+              <span class="face">
+                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+                  <path d="M18 25h.01M46 25h.01" stroke-width="7"/>
+                  <path d="M19 47c7-7 19-7 26 0"/>
+                  <path d="M14 18c3 3 7 4 11 3M50 18c-3 3-7 4-11 3"/>
+                </svg>
+              </span>
+              <span class="face">
+                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+                  <path d="M18 25h.01M46 25h.01" stroke-width="7"/>
+                  <path d="M18 39c5 12 23 12 28 0"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <div class="bottom-area">
+          <button class="confirm-button" type="button" id="confirm-button" data-bind="confirmText">Confirmar Retiro</button>
+        </div>
+      </section>
+
+      <section class="delivery-view" id="delivery-view" aria-label="Pedido en reparto">
+        <div class="delivery-map">
+          <button class="menu-button delivery-menu-button" id="delivery-open-editor" type="button" aria-label="Editar datos del reparto" aria-controls="editor-overlay" aria-expanded="false">
+            <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+          </button>
+          <div class="delivery-status">
+            <small>Estado</small>
+            <strong data-bind="deliveryStatus">Repartiendo</strong>
+          </div>
+        </div>
+
+        <div class="delivery-card">
+          <div class="delivery-grabber" aria-hidden="true"></div>
+          <div class="delivery-card-header">
+            <h2 class="delivery-customer" data-bind="deliveryName">Benja Vivanco</h2>
+            <div class="delivery-actions" aria-label="Acciones de contacto">
+              <button class="delivery-action" type="button" aria-label="Llamar al cliente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.78.65 2.62a2 2 0 0 1-.45 2.11L8.04 9.72a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.84.31 1.72.53 2.62.65A2 2 0 0 1 22 16.92Z"/>
+                </svg>
+              </button>
+              <button class="delivery-action" type="button" aria-label="Enviar mensaje">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z"/>
+                  <path d="M8 8h8M8 12h5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="delivery-info">
+            <p class="delivery-address" data-bind="deliveryAddress">Club de Campo Campo Grande , Pilar</p>
+            <p class="delivery-apartment" data-bind="deliveryApartment">Número de departamento: Lote/Manzana 189</p>
+          </div>
+
+          <div class="delivery-order-info">
+            <h3 class="delivery-code" data-bind="deliveryCode">2291275016</h3>
+            <p class="delivery-reference">
+              <span data-bind="deliveryReference">#5036</span> ·
+              <span data-bind="deliveryCustomer">Benja Vivanco</span>
+            </p>
+            <p class="delivery-business" data-bind="deliveryBusiness">Tucson Steak House &amp; Bar - Pilar</p>
+
+            <div class="delivery-products-head">
+              <span><span data-bind="deliveryProducts">2</span> <span data-bind="productsLabel">productos</span></span>
+              <span class="chevron" aria-hidden="true"></span>
+            </div>
+
+            <div class="product-list">
+              <div class="product-item">
+                <span class="product-item-quantity">1</span>
+                <span class="product-item-name" data-bind="deliveryProductOne">Buffalo Wings</span>
+                <span class="product-item-price" data-bind="deliveryProductOnePrice">23.700,00 $</span>
+              </div>
+              <div class="product-item">
+                <span class="product-item-quantity">1</span>
+                <span class="product-item-name" data-bind="deliveryProductTwo">Baked Potato</span>
+                <span class="product-item-price" data-bind="deliveryProductTwoPrice">7.500,00 $</span>
+              </div>
+            </div>
+          </div>
+          <button class="delivery-back" id="delivery-back" type="button" data-bind="deliveryConfirmText">Confirmar Entrega</button>
+          <button class="delivery-return" id="delivery-return" type="button">Volver al pedido</button>
+        </div>
+      </section>
+    </main>
+
+    <div class="editor-overlay" id="editor-overlay" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+      <aside class="editor">
+        <div class="editor-header">
+          <div>
+            <h2 id="editor-title">Editar pedido</h2>
+            <p>Los cambios se reflejan al instante en la pantalla.</p>
+          </div>
+          <button class="close-editor" id="close-editor" type="button" aria-label="Cerrar editor">×</button>
+        </div>
+
+        <div class="editor-group">
+          <label for="restaurant-input">Nombre del local</label>
+          <input id="restaurant-input" data-edit="restaurant" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="orders-input">Cantidad de pedidos</label>
+          <input id="orders-input" data-edit="orders" type="number" min="0" />
+        </div>
+        <div class="editor-group">
+          <label for="orders-label-input">Texto de pedidos</label>
+          <input id="orders-label-input" data-edit="ordersLabel" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="address-input">Dirección</label>
+          <textarea id="address-input" data-edit="address"></textarea>
+        </div>
+        <div class="editor-group">
+          <label for="company-input">Empresa</label>
+          <input id="company-input" data-edit="company" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="status-input">Estado</label>
+          <input id="status-input" data-edit="status" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="code-input">Número de orden</label>
+          <input id="code-input" data-edit="code" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="reference-input">Referencia</label>
+          <input id="reference-input" data-edit="reference" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="customer-input">Cliente</label>
+          <input id="customer-input" data-edit="customer" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="products-input">Cantidad de productos</label>
+          <input id="products-input" data-edit="products" type="number" min="0" />
+        </div>
+        <div class="editor-group">
+          <label for="products-label-input">Texto de productos</label>
+          <input id="products-label-input" data-edit="productsLabel" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="payment-input">Forma de pago</label>
+          <input id="payment-input" data-edit="payment" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="payment-label-input">Etiqueta de pago</label>
+          <input id="payment-label-input" data-edit="paymentLabel" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="experience-question-input">Pregunta de experiencia</label>
+          <input id="experience-question-input" data-edit="experienceQuestion" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="confirm-text-input">Texto del botón</label>
+          <input id="confirm-text-input" data-edit="confirmText" type="text" />
+        </div>
+
+        <div class="editor-divider"></div>
+        <h3 class="editor-section-title">Pantalla de reparto</h3>
+        <p class="editor-section-copy">Estos datos aparecen después de confirmar el retiro.</p>
+
+        <div class="editor-group">
+          <label for="delivery-status-input">Estado del reparto</label>
+          <input id="delivery-status-input" data-edit="deliveryStatus" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-name-input">Cliente del reparto</label>
+          <input id="delivery-name-input" data-edit="deliveryName" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-address-input">Dirección de entrega</label>
+          <input id="delivery-address-input" data-edit="deliveryAddress" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-apartment-input">Departamento / lote</label>
+          <input id="delivery-apartment-input" data-edit="deliveryApartment" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-code-input">Número del pedido en reparto</label>
+          <input id="delivery-code-input" data-edit="deliveryCode" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-reference-input">Referencia del reparto</label>
+          <input id="delivery-reference-input" data-edit="deliveryReference" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-customer-input">Cliente en la referencia</label>
+          <input id="delivery-customer-input" data-edit="deliveryCustomer" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-business-input">Comercio del reparto</label>
+          <input id="delivery-business-input" data-edit="deliveryBusiness" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-products-input">Cantidad de productos en reparto</label>
+          <input id="delivery-products-input" data-edit="deliveryProducts" type="number" min="0" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-product-one-input">Producto 1</label>
+          <input id="delivery-product-one-input" data-edit="deliveryProductOne" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-product-one-price-input">Precio producto 1</label>
+          <input id="delivery-product-one-price-input" data-edit="deliveryProductOnePrice" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-product-two-input">Producto 2</label>
+          <input id="delivery-product-two-input" data-edit="deliveryProductTwo" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-product-two-price-input">Precio producto 2</label>
+          <input id="delivery-product-two-price-input" data-edit="deliveryProductTwoPrice" type="text" />
+        </div>
+        <div class="editor-group">
+          <label for="delivery-confirm-text-input">Texto del botón de entrega</label>
+          <input id="delivery-confirm-text-input" data-edit="deliveryConfirmText" type="text" />
+        </div>
+
+        <div class="editor-actions">
+          <button class="reset-button" id="reset-button" type="button">Restablecer</button>
+          <button class="done-button" id="done-button" type="button">Listo</button>
+        </div>
+      </aside>
+    </div>
+    <div class="toast" id="toast" role="status">Retiro confirmado</div>
+
+    <script>
+      const defaults = {
+        restaurant: "Al Toque Roque Hamburguesas",
+        orders: "1",
+        ordersLabel: "pedido",
+        address: "Avenida Doctor Honorio Pueyrredón 4222 - ,\nB1631, Pilar",
+        company: "Al Toque Roque Hamburguesas",
+        status: "Listo",
+        code: "2296369589",
+        reference: "#3524",
+        customer: "agustina beltran",
+        products: "2",
+        productsLabel: "productos",
+        payment: "No pagar en el local",
+        paymentLabel: "Pago",
+        experienceQuestion: "¿Cómo es la experiencia de retiro?",
+        confirmText: "Confirmar Retiro",
+        deliveryStatus: "Repartiendo",
+        deliveryName: "Benja Vivanco",
+        deliveryAddress: "Club de Campo Campo Grande , Pilar",
+        deliveryApartment: "Número de departamento: Lote/Manzana 189",
+        deliveryCode: "2291275016",
+        deliveryReference: "#5036",
+        deliveryCustomer: "Benja Vivanco",
+        deliveryBusiness: "Tucson Steak House & Bar - Pilar",
+        deliveryProducts: "2",
+        deliveryProductOne: "Buffalo Wings",
+        deliveryProductOnePrice: "23.700,00 $",
+        deliveryProductTwo: "Baked Potato",
+        deliveryProductTwoPrice: "7.500,00 $",
+        deliveryConfirmText: "Confirmar Entrega"
+      };
+
+      const stored = JSON.parse(localStorage.getItem("pedido-data") || "null");
+      const state = { ...defaults, ...(stored || {}) };
+      const overlay = document.getElementById("editor-overlay");
+      const openButton = document.getElementById("open-editor");
+      const deliveryOpenButton = document.getElementById("delivery-open-editor");
+      const closeButton = document.getElementById("close-editor");
+      const doneButton = document.getElementById("done-button");
+      const resetButton = document.getElementById("reset-button");
+      const toast = document.getElementById("toast");
+      const fields = [...document.querySelectorAll("[data-edit]")];
+      let lastEditorTrigger = openButton;
+      let toastTimer;
+
+      function setText(element, value) {
+        element.textContent = value;
+      }
+
+      function render() {
+        document.querySelectorAll("[data-bind]").forEach((element) => {
+          const key = element.dataset.bind;
+          const value = state[key] ?? "";
+          if (key === "address") {
+            element.innerHTML = value.replace(/\n/g, "<br />");
+          } else {
+            setText(element, value);
+          }
+        });
+        fields.forEach((field) => {
+          field.value = state[field.dataset.edit] ?? "";
+        });
+      }
+
+      function openEditor(trigger = openButton) {
+        lastEditorTrigger = trigger;
+        render();
+        overlay.classList.add("open");
+        openButton.setAttribute("aria-expanded", "true");
+        deliveryOpenButton.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+        setTimeout(() => fields[0].focus(), 120);
+      }
+
+      function closeEditor() {
+        overlay.classList.remove("open");
+        openButton.setAttribute("aria-expanded", "false");
+        deliveryOpenButton.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+        lastEditorTrigger.focus();
+      }
+
+      function saveState() {
+        localStorage.setItem("pedido-data", JSON.stringify(state));
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      fields.forEach((field) => {
+        field.addEventListener("input", (event) => {
+          state[event.target.dataset.edit] = event.target.value;
+          render();
+          saveState();
+        });
+      });
+
+      openButton.addEventListener("click", () => openEditor(openButton));
+      deliveryOpenButton.addEventListener("click", () => openEditor(deliveryOpenButton));
+      closeButton.addEventListener("click", closeEditor);
+      doneButton.addEventListener("click", () => {
+        saveState();
+        closeEditor();
+        showToast("Cambios guardados");
+      });
+
+      resetButton.addEventListener("click", () => {
+        Object.assign(state, defaults);
+        saveState();
+        render();
+        showToast("Datos restablecidos");
+      });
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) closeEditor();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && overlay.classList.contains("open")) {
+          closeEditor();
+        }
+      });
+
+      document.getElementById("confirm-button").addEventListener("click", () => {
+        document.querySelector(".app").classList.add("delivery-mode");
+        showToast("Retiro confirmado · pedido en reparto");
+      });
+
+      document.getElementById("delivery-back").addEventListener("click", () => {
+        showToast("Entrega confirmada");
+      });
+
+      document.getElementById("delivery-return").addEventListener("click", () => {
+        document.querySelector(".app").classList.remove("delivery-mode");
+        showToast("Volviste al pedido");
+      });
+
+      render();
+    </script>
+  </body>
+</html>
