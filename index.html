@@ -1429,6 +1429,7 @@
 
       const stored = JSON.parse(localStorage.getItem("pedido-data") || "null");
       const state = { ...defaults, ...(stored || {}) };
+      const app = document.querySelector(".app");
       const overlay = document.getElementById("editor-overlay");
       const openButton = document.getElementById("open-editor");
       const deliveryOpenButton = document.getElementById("delivery-open-editor");
@@ -1523,7 +1524,7 @@
       });
 
       document.getElementById("confirm-button").addEventListener("click", () => {
-        document.querySelector(".app").classList.add("delivery-mode");
+        app.classList.add("delivery-mode");
         showToast("Retiro confirmado · pedido en reparto");
       });
 
@@ -1532,6 +1533,9 @@
       });
 
       render();
+      if (window.location.hash === "#repartiendo") {
+        app.classList.add("delivery-mode");
+      }
     </script>
   </body>
 </html>
