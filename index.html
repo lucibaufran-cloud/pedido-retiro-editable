@@ -856,19 +856,6 @@
         font-weight: 700;
       }
 
-      .delivery-return {
-        display: block;
-        width: calc(100% - 60px);
-        min-height: 52px;
-        margin: -18px 30px 30px;
-        border: 1px solid #d2d2d2;
-        border-radius: 28px;
-        color: #333;
-        background: #fff;
-        font-size: 17px;
-        font-weight: 700;
-      }
-
       @media (max-width: 520px) {
         .map-strip {
           height: 47px;
@@ -1101,12 +1088,6 @@
           font-size: 17px;
         }
 
-        .delivery-return {
-          width: calc(100% - 40px);
-          margin: -12px 20px 24px;
-          min-height: 48px;
-          font-size: 16px;
-        }
       }
     </style>
   </head>
@@ -1254,7 +1235,6 @@
             </div>
           </div>
           <button class="delivery-back" id="delivery-back" type="button" data-bind="deliveryConfirmText">Confirmar Entrega</button>
-          <button class="delivery-return" id="delivery-return" type="button">Volver al pedido</button>
         </div>
       </section>
     </main>
@@ -1534,11 +1514,6 @@
 
       document.getElementById("delivery-back").addEventListener("click", () => {
         showToast("Entrega confirmada");
-      });
-
-      document.getElementById("delivery-return").addEventListener("click", () => {
-        document.querySelector(".app").classList.remove("delivery-mode");
-        showToast("Volviste al pedido");
       });
 
       render();
