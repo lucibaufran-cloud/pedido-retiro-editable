@@ -622,11 +622,23 @@
         position: relative;
         height: min(486px, 67.5vw);
         overflow: hidden;
-        background: #e8e1db url("attached_assets/WhatsApp_Image_2026-09-24_at_17.22.50_1790307709649.jpeg") center top / 100% auto no-repeat;
+        background: #e8e1db;
+      }
+
+      .delivery-map-reference {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: auto;
+        max-width: none;
       }
 
       .delivery-map::after {
         position: absolute;
+        z-index: 1;
         inset: 0;
         background: linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 37%, rgba(80, 53, 31, .04));
         content: "";
@@ -1181,6 +1193,7 @@
 
       <section class="delivery-view" id="delivery-view" aria-label="Pedido en reparto">
         <div class="delivery-map">
+          <img class="delivery-map-reference" src="attached_assets/WhatsApp_Image_2026-09-24_at_17.22.50_1790307709649.jpeg" alt="Mapa de reparto" />
           <button class="menu-button delivery-menu-button" id="delivery-open-editor" type="button" aria-label="Editar datos del reparto" aria-controls="editor-overlay" aria-expanded="false">
             <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
           </button>
