@@ -66,6 +66,16 @@
           #d6d7d6;
       }
 
+      .confirmation-map-reference {
+        position: absolute;
+        z-index: 0;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 45%;
+      }
+
       .map-strip::after {
         position: absolute;
         inset: -25px -8%;
@@ -75,6 +85,10 @@
           repeating-linear-gradient(167deg, transparent 0 33px, #bfc2c1 34px 35px, transparent 36px 69px),
           repeating-linear-gradient(78deg, transparent 0 46px, #c3c6c5 47px 48px, transparent 49px 103px);
         transform: rotate(-7deg);
+      }
+
+      .map-strip::after {
+        display: none;
       }
 
       .status-bar {
@@ -1094,6 +1108,7 @@
   <body>
     <main class="app" aria-label="Detalle del pedido">
       <div class="map-strip" aria-hidden="true">
+        <img class="confirmation-map-reference" src="attached_assets/WhatsApp_Image_2026-09-25_at_01.41.28_1790311313486.jpeg" alt="" />
         <div class="status-bar">
           <span>22:58 ✈︎</span>
           <span class="system-icons">
