@@ -55,120 +55,6 @@
         background: var(--page);
       }
 
-      .start-view {
-        position: relative;
-        display: flex;
-        min-height: 100vh;
-        flex-direction: column;
-        justify-content: flex-end;
-        overflow: hidden;
-        background: #eee5df;
-      }
-
-      .start-image {
-        position: absolute;
-        z-index: 0;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center 41%;
-      }
-
-      .start-view::after {
-        position: absolute;
-        z-index: 1;
-        inset: 0;
-        background: transparent;
-        content: "";
-      }
-
-      .start-card {
-        position: relative;
-        z-index: 2;
-        padding: 34px 30px 30px;
-        border-radius: 30px 30px 0 0;
-        background: #fff;
-        box-shadow: 0 -4px 18px rgba(0, 0, 0, .16);
-      }
-
-      .start-card h1 {
-        margin: 0;
-        font-size: clamp(28px, 4.5vw, 38px);
-        line-height: 1.14;
-      }
-
-      .start-card p {
-        margin: 12px 0 28px;
-        color: #666;
-        font-size: clamp(18px, 3vw, 23px);
-      }
-
-      .start-button {
-        position: absolute;
-        z-index: 3;
-        bottom: 28.5%;
-        left: 6%;
-        width: 43%;
-        height: 7%;
-        min-height: 0;
-        border: 0;
-        border-radius: 40px;
-        color: transparent;
-        background: transparent;
-      }
-
-      .start-button:hover,
-      .start-button:focus-visible {
-        background: rgba(255, 255, 255, .16);
-        outline: 3px solid rgba(255, 255, 255, .7);
-        outline-offset: -3px;
-      }
-
-      .start-button:active {
-        background: rgba(0, 0, 0, .12);
-      }
-
-      .start-button-label {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        white-space: nowrap;
-      }
-
-      .start-card,
-      .start-card h1,
-      .start-card p {
-        display: none;
-      }
-
-      .legacy-start-button {
-        width: 100%;
-        min-height: 76px;
-        border: 0;
-        border-radius: 42px;
-        color: #fff;
-        background: #171717;
-        font-size: clamp(22px, 3.7vw, 28px);
-        font-weight: 700;
-      }
-
-      .start-button:hover {
-        background: #2b2b2b;
-      }
-
-      .app.start-screen > .map-strip,
-      .app.start-screen > .sheet,
-      .app.start-screen > .delivery-view {
-        display: none;
-      }
-
-      .app.started > .start-view {
-        display: none;
-      }
-
       .map-strip {
         position: relative;
         height: 54px;
@@ -731,61 +617,6 @@
         transform: translate(-50%, 0);
       }
 
-      .confirm-overlay {
-        position: fixed;
-        z-index: 30;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        visibility: hidden;
-        padding: 24px;
-        background: rgba(0, 0, 0, .62);
-        opacity: 0;
-        transition: opacity .2s ease, visibility .2s ease;
-      }
-
-      .confirm-overlay.open {
-        visibility: visible;
-        opacity: 1;
-      }
-
-      .confirm-dialog {
-        width: min(100%, 650px);
-        padding: 42px 43px 31px;
-        border-radius: 22px;
-        background: #fff;
-        box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
-      }
-
-      .confirm-dialog h2 {
-        margin: 0 0 40px;
-        font-size: clamp(26px, 4.6vw, 39px);
-        line-height: 1.14;
-      }
-
-      .confirm-dialog .confirm-primary {
-        width: 100%;
-        min-height: 82px;
-        border: 0;
-        border-radius: 45px;
-        color: #fff;
-        background: #171717;
-        font-size: clamp(21px, 3.5vw, 28px);
-        font-weight: 700;
-      }
-
-      .confirm-dialog .confirm-cancel {
-        display: block;
-        width: 100%;
-        margin-top: 27px;
-        border: 0;
-        color: var(--accent);
-        background: transparent;
-        font-size: clamp(22px, 3.4vw, 28px);
-        font-weight: 700;
-      }
-
       .delivery-view {
         display: none;
         min-height: 100vh;
@@ -1040,19 +871,6 @@
       }
 
       @media (max-width: 520px) {
-        .start-card {
-          padding: 25px 20px 20px;
-          border-radius: 25px 25px 0 0;
-        }
-
-        .start-card p {
-          margin: 9px 0 20px;
-        }
-
-        .start-button {
-          min-height: 0;
-        }
-
         .map-strip {
           height: 47px;
         }
@@ -1288,14 +1106,7 @@
     </style>
   </head>
   <body>
-    <main class="app start-screen" aria-label="Detalle del pedido">
-      <section class="start-view" aria-label="Pantalla inicial">
-        <img class="start-image" src="attached_assets/WhatsApp_Image_2026-09-25_at_02.02.58_1790312686559.jpeg" alt="Pantalla inicial con mapa y opciones de conexión" />
-        <button class="start-button" id="start-button" type="button" aria-label="Comenzar">
-          <span class="start-button-label">Comenzar</span>
-        </button>
-      </section>
-
+    <main class="app" aria-label="Detalle del pedido">
       <div class="map-strip" aria-hidden="true">
         <img class="confirmation-map-reference" src="attached_assets/WhatsApp_Image_2026-09-25_at_01.41.28_1790311313486.jpeg" alt="" />
         <div class="status-bar">
@@ -1442,18 +1253,6 @@
         </div>
       </section>
     </main>
-
-    <div class="confirm-overlay" id="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      <div class="confirm-dialog">
-        <h2 id="confirm-title">
-          ¿Confirmas que<br />
-          retiraste el pedido<br />
-          <span data-bind="code">2296369589</span> (<span data-bind="reference">#3524</span>)?
-        </h2>
-        <button class="confirm-primary" id="confirm-pickup" type="button">Confirmar Retiro</button>
-        <button class="confirm-cancel" id="cancel-pickup" type="button">Cancelar</button>
-      </div>
-    </div>
 
     <div class="editor-overlay" id="editor-overlay" role="dialog" aria-modal="true" aria-labelledby="editor-title">
       <aside class="editor">
@@ -1631,11 +1430,7 @@
       const stored = JSON.parse(localStorage.getItem("pedido-data") || "null");
       const state = { ...defaults, ...(stored || {}) };
       const app = document.querySelector(".app");
-      const startButton = document.getElementById("start-button");
       const overlay = document.getElementById("editor-overlay");
-      const confirmOverlay = document.getElementById("confirm-overlay");
-      const confirmPickupButton = document.getElementById("confirm-pickup");
-      const cancelPickupButton = document.getElementById("cancel-pickup");
       const openButton = document.getElementById("open-editor");
       const deliveryOpenButton = document.getElementById("delivery-open-editor");
       const closeButton = document.getElementById("close-editor");
@@ -1694,37 +1489,12 @@
         toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
       }
 
-      function openPickupConfirmation() {
-        render();
-        confirmOverlay.classList.add("open");
-        document.body.style.overflow = "hidden";
-        confirmPickupButton.focus();
-      }
-
-      function closePickupConfirmation() {
-        confirmOverlay.classList.remove("open");
-        document.body.style.overflow = "";
-        document.getElementById("confirm-button").focus();
-      }
-
-      function completePickup() {
-        closePickupConfirmation();
-        app.classList.add("started", "delivery-mode");
-        app.classList.remove("start-screen");
-        showToast("Retiro confirmado · pedido en reparto");
-      }
-
       fields.forEach((field) => {
         field.addEventListener("input", (event) => {
           state[event.target.dataset.edit] = event.target.value;
           render();
           saveState();
         });
-      });
-
-      startButton.addEventListener("click", () => {
-        app.classList.add("started");
-        app.classList.remove("start-screen");
       });
 
       openButton.addEventListener("click", () => openEditor(openButton));
@@ -1747,24 +1517,15 @@
         if (event.target === overlay) closeEditor();
       });
 
-      confirmPickupButton.addEventListener("click", completePickup);
-      cancelPickupButton.addEventListener("click", closePickupConfirmation);
-
-      confirmOverlay.addEventListener("click", (event) => {
-        if (event.target === confirmOverlay) closePickupConfirmation();
-      });
-
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && overlay.classList.contains("open")) {
           closeEditor();
         }
-        if (event.key === "Escape" && confirmOverlay.classList.contains("open")) {
-          closePickupConfirmation();
-        }
       });
 
       document.getElementById("confirm-button").addEventListener("click", () => {
-        openPickupConfirmation();
+        app.classList.add("delivery-mode");
+        showToast("Retiro confirmado · pedido en reparto");
       });
 
       document.getElementById("delivery-back").addEventListener("click", () => {
@@ -1773,8 +1534,7 @@
 
       render();
       if (window.location.hash === "#repartiendo") {
-        app.classList.add("started", "delivery-mode");
-        app.classList.remove("start-screen");
+        app.classList.add("delivery-mode");
       }
     </script>
   </body>
